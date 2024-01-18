@@ -2,6 +2,7 @@
 #include "vector"
 #include "string"
 #include "numeric"
+#include <ctime>
 
 using namespace std;
 
@@ -109,16 +110,55 @@ public:
     }
 };
 
+class Lesson {
+private:
+    Teacher st;
+public:
+
+    Lesson(const Teacher &st) : st(st) {}
+
+    vector<Student> here;
+
+    void addToLesson(Student student) {
+        here.push_back(student);
+    }
+
+    void WorkOnLesson() {
+        int skolko = rand() % here.size();
+        for (int i=0; i < skolko; i++) {
+            Student student = here[rand() % here.size()];
+            st.MoodMark(student);
+            cout << "Student " << student.getName() << " got a Mark!"<< endl;
+        }
+    }
+};
+
 
 int main() {
+    srand(time(0));
+
     Student s1("Vasya");
     Student s2("Katya");
     s1.getMark(5, Math);
     s2.getMark(2, Russian);
     cout << s1.isOtlichnik() << endl;
     cout << s2.isOtlichnik() << endl; //этап 1
+
     Teacher t1("Efremov", Math);
     t1.giveMark(s1, 3); //этап 2
+
     t1.MoodMark(s2); //этап 3
+
+    Student s3("Lola");
+    Student s4("Sasha");
+    Student s5("Petya");
+    Lesson para(t1); //Ефремов - препод на этой паре
+    para.addToLesson(s1);
+    para.addToLesson(s2);
+    para.addToLesson(s3);
+    para.addToLesson(s4);
+    para.addToLesson(s5);
+    para.WorkOnLesson();
+
     return 0;
 }
