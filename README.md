@@ -83,9 +83,29 @@ private:
     string name;
     Subjects aaa;
 public:
+    bool Mood =(rand() % 2 == 0);
+
     Teacher(const string &name, Subjects aaa) : name(name), aaa(aaa) {}
     void giveMark(Student s, unsigned int a) {
         s.getMark(a, aaa);
+    }
+
+    void MoodMark(Student s) {
+        bool Otlichnik = s.isOtlichnik();
+        unsigned int r = (rand() % 2 == 0);
+
+        if (Mood && Otlichnik) {
+            giveMark(s, 5);
+        }
+        if (!Mood && Otlichnik) {
+            giveMark(s, (4+r));
+        }
+        if (Mood && !Otlichnik) {
+            giveMark(s, 4);
+        }
+        if (!Mood && !Otlichnik) {
+            giveMark(s, (2+r));
+        }
     }
 };
 
@@ -99,5 +119,6 @@ int main() {
     cout << s2.isOtlichnik() << endl; //этап 1
     Teacher t1("Efremov", Math);
     t1.giveMark(s1, 3); //этап 2
+    t1.MoodMark(s2); //этап 3
     return 0;
 }
