@@ -78,12 +78,26 @@ void getMark(int mark, Subjects subject ) {
     }
 };
 
+class Teacher {
+private:
+    string name;
+    Subjects aaa;
+public:
+    Teacher(const string &name, Subjects aaa) : name(name), aaa(aaa) {}
+    void giveMark(Student s, unsigned int a) {
+        s.getMark(a, aaa);
+    }
+};
+
+
 int main() {
     Student s1("Vasya");
     Student s2("Katya");
     s1.getMark(5, Math);
     s2.getMark(2, Russian);
     cout << s1.isOtlichnik() << endl;
-    cout << s2.isOtlichnik() << endl;
+    cout << s2.isOtlichnik() << endl; //этап 1
+    Teacher t1("Efremov", Math);
+    t1.giveMark(s1, 3); //этап 2
     return 0;
 }
