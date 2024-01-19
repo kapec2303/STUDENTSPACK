@@ -1,7 +1,7 @@
 #include <iostream>
 #include "vector"
 #include "string"
-#include "numeric"
+#include <numeric>
 #include <ctime>
 #include <algorithm>
 
@@ -133,11 +133,21 @@ public:
             giveMark(s, (2+r));
         }
     }
+
+    bool operator==(const Teacher& other) const {
+        return this->name == other.name && this->aaa == other.aaa;
+    }
 };
 
 class OneTeacher : public Teacher { //Ставит только одну оценку: либо пять, либо 2
+private:
+    string name;
 public:
     bool isGood = 0;
+
+    const string &getName1() const {
+        return name;
+    }
 
     OneTeacher(const string &name, Subjects aaa, bool isGood) : Teacher(name, aaa), isGood(isGood) {}
 
@@ -153,6 +163,8 @@ public:
             Teacher::giveMark(s, 2);
         }
     }
+
+    //==
 
 };
 
@@ -184,6 +196,15 @@ public:
             st.MoodMark(student);
             cout << "Student " << student.getName() << " got a Mark!"<< endl;
         }
+    }
+
+    bool operator==(const Lesson &rhs) const {
+        return st == rhs.st &&
+               here == rhs.here;
+    }
+
+    bool operator!=(const Lesson &rhs) const {
+        return !(rhs == *this);
     }
 };
 
@@ -280,6 +301,9 @@ private:
     vector<Student> sWithAbsentParent;
 
 public:
+
+    Meeting() {}
+
     void addParent(vector<Parent>& p) {
         parentHere.insert(parentHere.end(), p.begin(), p.end());
     }
@@ -349,6 +373,26 @@ public:
 
 };
 
+class Grandma : public Parent {
+public:
+    Grandma(const string &name, bool mood) : Parent(name, mood) {}
+
+    void TellAboutVnuk(Student& student) {
+        cout << "My little grandchild " << student.getName() << "is the best! ^-^" << endl;
+    }
+
+    void tellAboutAll() {
+        cout << "All of my grandchildren are my treasures!" << endl;
+    }
+
+    void tellAboutOther(Student& student) {
+        if (this->isMood() == 1) {
+            cout << "Idk... This student is OK." << endl;
+        } else {
+            cout << "This student is a shame to the family! Ew" << endl;
+        }
+    }
+};
 
 int main() {
     srand(time(0));
@@ -426,5 +470,19 @@ int main() {
     P1.addChild(s1);
     P1.addChild(s2);
     P1.tellAboutAll();
+    Parent P2("Lena", 0);
+    Grandma g1("Nina", 1);
+    g1.tellAboutOther(s3);
+    vector<Lesson> lessons;
+    lessons.push_back(para);
+    Meeting sobranie;
+    sobranie.addLesson(lessons);
+    vector<Teacher> teachers;
+    teachers.push_back(t1);
+    sobranie.addTeacher(teachers);
+    vector<Parent> parents;
+    parents.push_back(P1);
+    parents.push_back(P2);
+    sobranie.generateReport();
     return 0;
     }
