@@ -41,7 +41,7 @@ public:
 //        Student::marks = marks;
 //    }
 
-void getMark(int mark, Subjects subject ) {
+    void getMark(int mark, Subjects subject ) {
         switch (subject) {
             case Math: {
                 this->marks.Math.push_back(mark);
@@ -56,7 +56,7 @@ void getMark(int mark, Subjects subject ) {
                 break;
             }
             case Russian: {
-                this->marks.Math.push_back(mark);
+                this->marks.Russian.push_back(mark);
                 break;
             }
         }
@@ -82,16 +82,18 @@ void getMark(int mark, Subjects subject ) {
 class Teacher {
 private:
     string name;
+protected:
     Subjects aaa;
 public:
     bool Mood =(rand() % 2 == 0);
 
     Teacher(const string &name, Subjects aaa) : name(name), aaa(aaa) {}
-    void giveMark(Student s, unsigned int a) {
+
+    virtual void giveMark(Student& s, unsigned int a) {
         s.getMark(a, aaa);
     }
 
-    void MoodMark(Student s) {
+    void MoodMark(Student& s) {
         bool Otlichnik = s.isOtlichnik();
         unsigned int r = (rand() % 2 == 0);
 
@@ -108,6 +110,27 @@ public:
             giveMark(s, (2+r));
         }
     }
+};
+
+class OneTeacher : public Teacher { //Ставит только одну оценку: либо пять, либо 2
+public:
+    bool isGood = 0;
+
+    OneTeacher(const string &name, Subjects aaa, bool isGood) : Teacher(name, aaa), isGood(isGood) {}
+
+    bool isGood1() const {
+        return isGood;
+    }
+
+    void giveMark(Student& s, unsigned int a) override {
+        bool b = this->isGood1();
+        if (b) {
+            Teacher::giveMark(s, 5);
+        } else {
+            Teacher::giveMark(s, 2);
+        }
+    }
+
 };
 
 class Lesson {
@@ -140,11 +163,9 @@ int main() {
     Student s1("Vasya");
     Student s2("Katya");
     s1.getMark(5, Math);
-    s2.getMark(2, Russian);
-    cout << s1.isOtlichnik() << endl;
-    cout << s2.isOtlichnik() << endl; //этап 1
+    s2.getMark(2, Russian); //этап 1
 
-    Teacher t1("Efremov", Math);
+    Teacher t1("Efremov", English);
     t1.giveMark(s1, 3); //этап 2
 
     t1.MoodMark(s2); //этап 3
@@ -158,7 +179,43 @@ int main() {
     para.addToLesson(s3);
     para.addToLesson(s4);
     para.addToLesson(s5);
-    para.WorkOnLesson();
+    //para.WorkOnLesson();
 
-    return 0;
-}
+    OneTeacher t2("Stepanova5", English, 1); //Добрая
+    //t1.giveMark(s5, 5);
+    t2.giveMark(s5, 5);
+    OneTeacher t3("Stepanova2", Chemistry, 0); //злая
+    t3.giveMark(s4, 5);
+
+        cout << "Final marks for all students:" << endl;
+        for (const Student& student : {s1, s2, s3, s4, s5}) {
+            cout << "Student " << student.getName() << ":" << endl;
+            cout << "   Math: ";
+            for (const auto& mark : student.marks.Math) {
+                cout << mark << " ";
+            }
+            cout << endl;
+
+            cout << "   English: ";
+            for (const auto& mark : student.marks.English) {
+                cout << mark << " ";
+            }
+            cout << endl;
+
+            cout << "   Chemistry: ";
+            for (const auto& mark : student.marks.Chemistry) {
+                cout << mark << " ";
+            }
+            cout << endl;
+
+            cout << "   Russian: ";
+            for (const auto& mark : student.marks.Russian) {
+                cout << mark << " ";
+            }
+            cout << endl;
+
+            cout << "----------------------" << endl;
+        }
+
+        return 0;
+    }
