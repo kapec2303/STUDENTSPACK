@@ -3,6 +3,8 @@
 #include "string"
 #include "numeric"
 #include <ctime>
+#include <algorithm>
+
 
 using namespace std;
 
@@ -77,7 +79,13 @@ public:
         if (!isOtlichnik1(this->marks.Russian)) return false;
         return true;
     }
+
+    bool operator==(const Student& other) const {
+        return this->name == other.name;
+    }
 };
+
+
 
 class Teacher {
 private:
@@ -85,21 +93,20 @@ private:
 protected:
     Subjects aaa;
     int MoodCount = 0;
+    int MoodMax = 4;
 public:
     bool Mood =(rand() % 2 == 0);
 
     Teacher(const string &name, Subjects aaa) : name(name), aaa(aaa) {}
 
+    Teacher(const string &name, Subjects aaa, int moodMax) : name(name), aaa(aaa), MoodMax(moodMax) {}
+
     virtual void giveMark(Student& s, unsigned int a) {
-        if (MoodCount < 4) {
+        if (MoodCount < MoodMax) {
             s.getMark(a, aaa);
             MoodCount += 1;
         } else {
-            a = rand() % 6;
-            //cout << a << endl;
-            if (a <=1) {
-                a += 2;
-            }
+            a = rand() % 4 + 2;
             s.getMark(a, aaa);
             MoodCount = 0;
         }
@@ -164,6 +171,89 @@ public:
             Student student = here[rand() % here.size()];
             st.MoodMark(student);
             cout << "Student " << student.getName() << " got a Mark!"<< endl;
+        }
+    }
+};
+
+class Parent {
+private:
+    string name;
+    bool Mood;
+    vector<Student> children;
+public:
+    Parent(const string &name, bool mood) : name(name), Mood(mood) {}
+
+    const string &getName() const {
+        return name;
+    }
+
+    bool isMood() const {
+        return Mood;
+    }
+
+    const vector<Student> &getChildren() {
+        return children;
+    }
+
+    void addChild(const Student& child) {
+        children.push_back(child);
+    }
+
+    bool isMyChild(Student& student) {
+        auto it = find(children.begin(), children.end(), student);
+        if (it != children.end()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    void tellAboutChild(Student& student) {
+        string Otlich;
+        if (student.isOtlichnik()) {
+            Otlich = "has good marks :)";
+        } else Otlich = "has bad marks :(";
+        if (this->isMyChild(student)) {
+            cout << "Hello! I'm " << this->getName() << ", " << student.getName() << "'s parent." << endl;
+            cout << "This child " << Otlich << endl;
+        } else {
+            cout << "This iss not my child..." << endl;
+        }
+    }
+
+    void tellAboutRandomChild() {
+        if (children.empty()) {
+            cout << "I don't have any children :O" << endl;
+        return;
+        } else {
+            unsigned int iii = rand() % children.size();
+            tellAboutChild(children[iii]);
+        }
+    }
+
+    void tellAboutSpecChild(Student student) {
+        if (isMyChild(student)) {
+            tellAboutChild(student);
+        } else {
+            cout << "Excuse me, this is not my child..." << endl;
+        }
+    }
+
+    virtual void tellAboutAllChildrenShort() {
+        for (Student& student: children) {
+            if (student.isOtlichnik() && Mood) {
+                cout << "I love all of my children! They are amazing!\n";
+            } else {
+                cout << "I don't feel like talking about my children today\n";
+            }
+        }
+    }
+
+    void tellAboutAll() {
+        for (Student& student: children) {
+            tellAboutChild(student);
+            cout << endl;
         }
     }
 };
@@ -240,5 +330,10 @@ int main() {
             cout << "----------------------" << endl;
         }
         t1.giveMark(s1, 5);
+
+    Parent P1("Natalia", 1);
+    P1.addChild(s1);
+    P1.addChild(s2);
+    P1.tellAboutAll();
     return 0;
     }
