@@ -84,13 +84,25 @@ private:
     string name;
 protected:
     Subjects aaa;
+    int MoodCount = 0;
 public:
     bool Mood =(rand() % 2 == 0);
 
     Teacher(const string &name, Subjects aaa) : name(name), aaa(aaa) {}
 
     virtual void giveMark(Student& s, unsigned int a) {
-        s.getMark(a, aaa);
+        if (MoodCount < 4) {
+            s.getMark(a, aaa);
+            MoodCount += 1;
+        } else {
+            a = rand() % 6;
+            //cout << a << endl;
+            if (a <=1) {
+                a += 2;
+            }
+            s.getMark(a, aaa);
+            MoodCount = 0;
+        }
     }
 
     void MoodMark(Student& s) {
@@ -187,6 +199,17 @@ int main() {
     OneTeacher t3("Stepanova2", Chemistry, 0); //злая
     t3.giveMark(s4, 5);
 
+    Teacher M1("Aaaaa", Chemistry);
+    M1.giveMark(s1, 5);
+    M1.giveMark(s1, 5);
+    M1.giveMark(s1, 5);
+    M1.giveMark(s1, 5);
+    M1.giveMark(s1, 5);
+    M1.giveMark(s1, 5);
+    M1.giveMark(s1, 5);
+    M1.giveMark(s1, 5);
+    M1.giveMark(s1, 5);
+    M1.giveMark(s1, 5);
         cout << "Final marks for all students:" << endl;
         for (const Student& student : {s1, s2, s3, s4, s5}) {
             cout << "Student " << student.getName() << ":" << endl;
@@ -216,6 +239,6 @@ int main() {
 
             cout << "----------------------" << endl;
         }
-
-        return 0;
+        t1.giveMark(s1, 5);
+    return 0;
     }
