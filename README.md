@@ -101,6 +101,10 @@ public:
 
     Teacher(const string &name, Subjects aaa, int moodMax) : name(name), aaa(aaa), MoodMax(moodMax) {}
 
+    const string &getName() const {
+        return name;
+    }
+
     virtual void giveMark(Student& s, unsigned int a) {
         if (MoodCount < MoodMax) {
             s.getMark(a, aaa);
@@ -163,6 +167,14 @@ public:
 
     void addToLesson(Student student) {
         here.push_back(student);
+    }
+
+    const Teacher &getSt() const {
+        return st;
+    }
+
+    const vector<Student> &getHere() const {
+        return here;
     }
 
     void WorkOnLesson() {
@@ -256,6 +268,85 @@ public:
             cout << endl;
         }
     }
+};
+
+class Meeting {
+private:
+    vector<Teacher> teacherHere;
+    vector<Parent> parentHere;
+    vector<Student> studToDis;
+    vector<Lesson> discussLesson;
+    vector<Teacher> absentTeacher;
+    vector<Student> sWithAbsentParent;
+
+public:
+    void addParent(vector<Parent>& p) {
+        parentHere.insert(parentHere.end(), p.begin(), p.end());
+    }
+    void addTeacher(vector<Teacher>& t) {
+        teacherHere.insert(teacherHere.end(), t.begin(), t.end());
+    }
+    void addLesson(vector<Lesson>& l) {
+        discussLesson.insert(discussLesson.end(), l.begin(), l.end());
+    }
+
+    void KtoVel() {
+        for (const Lesson &lesson: discussLesson) {
+            Teacher lessonTeacher = lesson.getSt();
+            if (find(teacherHere.begin(), teacherHere.end(), lessonTeacher) == teacherHere.end()) {
+                absentTeacher.push_back(lessonTeacher);
+            }
+        }
+    }
+
+    void Roditeli() {
+        for (Student& student: studToDis) {
+            bool parentFound = false;
+
+            for (Parent &parent: parentHere) {
+                if (parent.isMyChild(student)) {
+                    parentFound = true;
+                    break; // Родитель найден, переходим к следующему ученику
+                }
+            }
+
+            if (!parentFound) {
+                // Добавить ученика в список, если его родитель не найден
+                sWithAbsentParent.push_back(student);
+            }
+        }
+    }
+
+    void conductMeeting() {
+        KtoVel();
+        Roditeli();
+        discussStudents();
+        generateReport();
+    }
+
+    void discussStudents() {
+        for (const Student &student: studToDis) {
+            if (std::find(sWithAbsentParent.begin(), sWithAbsentParent.end(), student) == sWithAbsentParent.end()) {
+                cout << "Discussing student " << student.getName() << endl;
+            } else {
+                cout << "Student " << student.getName() << " is not being discussed because his parent is absent today\n" << endl;
+            }
+        }
+    }
+
+    void generateReport() {
+        cout << "Report about meeting:" << endl;
+        cout << "Apsent teachers:" << endl;
+        for (const Teacher &teacher: absentTeacher) {
+            cout << teacher.getName() << endl;
+        }
+        cout << "Students with apsent parents:" << endl;
+        for (const Student &student: sWithAbsentParent) {
+            cout << student.getName() << endl;
+        }
+    }
+//треш
+
 };
 
 
